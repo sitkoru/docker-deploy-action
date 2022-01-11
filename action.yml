@@ -60,4 +60,5 @@ runs:
             export VAULT__TOKEN=$(docker exec -e VAULT_TOKEN=$(docker exec ${{ inputs.vault_container }} vault login -method=userpass -token-only -no-store username=${{ inputs.vault_username }} password=${{ inputs.vault_password }}) ${{ inputs.vault_container }} vault token create -policy=${{ inputs.vault_policy }} --orphan -field=token --period=${{ inputs.vault_period }})
           fi
           cd ${{ inputs.dir }}
+          ./${{ inputs.script }} pull ${{ inputs.name }}
           ./${{ inputs.script }} up -d ${{ inputs.name }}
