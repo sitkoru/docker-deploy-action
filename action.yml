@@ -1,0 +1,63 @@
+name: "sitkoru/docker-deploy-action"
+description: "Action to deploy docker container to server"
+branding:
+  icon: "package"
+  color: "blue"
+
+inputs:
+  name:
+    description: "Service name"
+    required: true
+  version:
+    description: "Service version"
+    required: true
+  host:
+    description: "Deploy host"
+    required: true
+  user:
+    description: "Deploy user"
+    required: true
+  key:
+    description: "Deploy ssh key"
+    required: true
+  dir:
+    description: "Host working dir with docker-compose script"
+    required: true
+  script:
+    description: "Script to run docker-compose commands"
+    required: true
+    default: "prod.run"
+  vault_policy:
+    description: "Vault policy"
+    required: false
+  vault_container:
+    description: "Vault container"
+    required: false
+  vault_username:
+    description: "Vault username"
+    required: false
+  vault_password:
+    description: "Vault password"
+    required: false
+  vault_period:
+    description: "Vault token period"
+    required: false
+    default: 12h
+
+runs:
+  using: "composite"
+  steps:
+    - name: Update production
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ inputs.host }}
+        username: ${{ inputs.user }}
+        key: ${{ inputs.key }}
+        script_stop: true
+        script: |
+          export VERSION=${{ inputs.version }}
+          if [[ -z "${{ inputs.vault_policy }}" ]]; then
+            export VAULT__TOKEN=$(docker exec -e VAULT_TOKEN=$(docker exec ${{ inputs.vault_container }} vault login -method=userpass -token-only -no-store username=${{ inputs.vault_username }} password=${{ inputs.vault_password }}) ${{ inputs.vault_container }} vault token create -policy=${{ inputs.vault_policy }} --orphan -field=token --period=${{ inputs.vault_period }})
+          fi
+          cd ${{ inputs.dir }}
+          ./${{ inputs.script }} up -d ${{ inputs.name }}
