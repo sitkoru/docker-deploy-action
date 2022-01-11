@@ -56,7 +56,7 @@ runs:
         script_stop: true
         script: |
           export VERSION=${{ inputs.version }}
-          if [[ -z "${{ inputs.vault_policy }}" ]]; then
+          if [[ -n "${{ inputs.vault_policy }}" ]]; then
             export VAULT__TOKEN=$(docker exec -e VAULT_TOKEN=$(docker exec ${{ inputs.vault_container }} vault login -method=userpass -token-only -no-store username=${{ inputs.vault_username }} password=${{ inputs.vault_password }}) ${{ inputs.vault_container }} vault token create -policy=${{ inputs.vault_policy }} --orphan -field=token --period=${{ inputs.vault_period }})
           fi
           cd ${{ inputs.dir }}
