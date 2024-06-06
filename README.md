@@ -55,4 +55,8 @@ jobs:
           # vault_username: ${{ secrets.VAULT_USERNAME }}
           # vault_password: ${{ secrets.VAULT_PASSWORD }}
           # vault_period: ${{ secrets.VAULT_PERIOD }}
+          # uncomment if service needs login to docker registry
+          # docker_registry_login: ${{ secrets.DOCKER_REGISTRY_LOGIN }}
+          # docker_registry_password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+          # docker_registry_url: ${{ secrets.DOCKER_REGISTRY_URL }}
 ```

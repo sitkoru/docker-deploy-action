@@ -43,6 +43,15 @@ inputs:
     description: "Vault token period"
     required: false
     default: 12h
+  docker_registry_login:
+    description: "Vault password"
+    required: false
+  docker_registry_password:
+    description: "Vault password"
+    required: false
+  docker_registry_url:
+    description: "Vault password"
+    required: false
 
 runs:
   using: "composite"
@@ -59,6 +68,10 @@ runs:
           if [[ -n "${{ inputs.vault_policy }}" ]]; then
             echo "Generate Vault token"
             export VAULT__TOKEN=$(docker exec -e VAULT_TOKEN=$(docker exec ${{ inputs.vault_container }} vault login -method=userpass -token-only -no-store username=${{ inputs.vault_username }} password=${{ inputs.vault_password }}) ${{ inputs.vault_container }} vault token create -policy=${{ inputs.vault_policy }} --orphan -field=token --period=${{ inputs.vault_period }})
+          fi
+          if [[ -n "${{ inputs.docker_registry_url }}" ]]; then
+            echo "Login to docker registry"
+            echo '${{ inputs.docker_registry_url }}' | docker login ${{ inputs.docker_registry_login }} -u ${{ inputs.docker_registry_password }} --password-stdin
           fi
           cd ${{ inputs.dir }}
           echo "Pull service image"
