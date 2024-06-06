@@ -71,7 +71,7 @@ runs:
           fi
           if [[ -n "${{ inputs.docker_registry_url }}" ]]; then
             echo "Login to docker registry"
-            echo '${{ inputs.docker_registry_url }}' | docker login ${{ inputs.docker_registry_login }} -u ${{ inputs.docker_registry_password }} --password-stdin
+            echo '${{ inputs.docker_registry_password }}' | docker login ${{ inputs.docker_registry_url }} -u ${{ inputs.docker_registry_login }} --password-stdin
           fi
           cd ${{ inputs.dir }}
           echo "Pull service image"
